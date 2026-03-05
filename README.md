@@ -1,4 +1,4 @@
-[README.md](https://github.com/user-attachments/files/25777998/README.md)
+
 # 📐 Complejidad Computacional — Clase Interactiva
 
 ### Unidad 1: Fundamentos Matemáticos
@@ -9,7 +9,7 @@
 
 ## 🌐 Ver el sitio
 
-🔗 **[Abrir clase interactiva](https://TU_USUARIO.github.io/TU_REPOSITORIO/)**
+🔗https://miriamfarfan.github.io/Recursos_Complejidad_Computacional/
 
 ---
 
