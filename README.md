@@ -9,7 +9,14 @@ Aplicación web educativa interactiva basada en el material del curso de Complej
 
 📚 Contenido
 La aplicación cubre los 8 módulos de la Unidad 1 en formato de video educativo interactivo:
-#MóduloTemas1¿Qué es un Algoritmo?Definición formal, 5 propiedades, ejemplos2Inducción MatemáticaCaso base, hipótesis inductiva, paso inductivo, dominós animados3Definiciones RecursivasFactorial, Fibonacci, inducción fuerte, recursión estructural4Notación AsintóticaBig-O, Big-Ω, Big-Θ, small-o, small-ω con gráfica interactiva5Análisis de AlgoritmosPseudocódigo animado, búsqueda binaria, Merge Sort6GrafosRepresentaciones: matriz de adyacencia, lista de adyacencia7Ordenamiento y RecurrenciasTeorema Maestro, Merge Sort O(n log n)8Quiz FinalPreguntas integradoras de todos los temas
+#MóduloTemas1¿Qué es un Algoritmo?Definición formal, 5 propiedades, ejemplos
+2Inducción MatemáticaCaso base, hipótesis inductiva, paso inductivo, dominós animados
+3Definiciones RecursivasFactorial, Fibonacci, inducción fuerte, recursión estructural
+4Notación AsintóticaBig-O, Big-Ω, Big-Θ, small-o, small-ω con gráfica interactiva
+5Análisis de AlgoritmosPseudocódigo animado, búsqueda binaria, Merge Sort
+6GrafosRepresentaciones: matriz de adyacencia, lista de adyacencia
+7Ordenamiento y RecurrenciasTeorema Maestro, Merge Sort O(n log n)
+8Quiz FinalPreguntas integradoras de todos los temas
 
 ✨ Características
 
