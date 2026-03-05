@@ -5,7 +5,7 @@ Aplicación web educativa interactiva basada en el material del curso de Complej
 
 
 🌐 Ver el sitio
-🔗 Abrir clase interactiva
+🔗 Abrir clase interactiva: https://miriamfarfan.github.io/Recursos_Complejidad_Computacional/
 
 📚 Contenido
 La aplicación cubre los 8 módulos de la Unidad 1 en formato de video educativo interactivo:
