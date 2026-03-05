@@ -1,0 +1,2170 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Complejidad Computacional — Clase Interactiva</title>
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600;700&family=Fraunces:ital,wght@0,300;0,600;0,900;1,300&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<style>
+:root {
+  --bg: #0a0e1a;
+  --bg2: #111827;
+  --bg3: #1a2235;
+  --border: #1e2d45;
+  --text: #e2e8f0;
+  --muted: #64748b;
+  --blue: #38bdf8;
+  --green: #4ade80;
+  --orange: #fb923c;
+  --red: #f87171;
+  --yellow: #fbbf24;
+  --purple: #a78bfa;
+  --pink: #f472b6;
+}
+* { margin:0; padding:0; box-sizing:border-box; }
+html { scroll-behavior: smooth; }
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: 'DM Sans', sans-serif;
+  min-height: 100vh;
+  display: flex;
+}
+
+/* SIDEBAR */
+#sidebar {
+  width: 260px;
+  min-width: 260px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  padding: 24px 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+  flex-shrink: 0;
+}
+#sidebar h2 {
+  font-family: 'Fraunces', serif;
+  font-size: 1rem;
+  color: var(--blue);
+  padding: 0 20px 16px;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 12px;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.nav-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 20px;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-left: 3px solid transparent;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { border-left-color: var(--blue); background: var(--bg3); color: var(--blue); }
+.nav-item.done { color: var(--green); }
+.nav-item.done .nav-dot { background: var(--green); }
+.nav-dot {
+  width: 8px; height: 8px;
+  border-radius: 50%;
+  background: var(--border);
+  flex-shrink: 0;
+}
+.nav-item.active .nav-dot { background: var(--blue); }
+
+/* PROGRESS BAR */
+#progress-bar-wrap {
+  position: fixed;
+  top: 0; left: 260px; right: 0;
+  height: 3px;
+  background: var(--border);
+  z-index: 100;
+}
+#progress-bar {
+  height: 100%;
+  background: linear-gradient(90deg, var(--blue), var(--purple));
+  transition: width 0.5s ease;
+  width: 0%;
+}
+
+/* MAIN */
+#main {
+  flex: 1;
+  overflow-y: auto;
+  padding: 0;
+}
+
+/* SECTIONS */
+.section {
+  display: none;
+  min-height: 100vh;
+  padding: 60px 48px 80px;
+  max-width: 900px;
+}
+.section.active { display: block; }
+
+/* HERO */
+.section-hero {
+  margin-bottom: 48px;
+}
+.section-tag {
+  display: inline-block;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--blue);
+  background: rgba(56,189,248,0.1);
+  border: 1px solid rgba(56,189,248,0.2);
+  padding: 4px 12px;
+  border-radius: 20px;
+  margin-bottom: 16px;
+}
+.section-title {
+  font-family: 'Fraunces', serif;
+  font-size: 2.8rem;
+  font-weight: 900;
+  line-height: 1.1;
+  margin-bottom: 16px;
+  color: #fff;
+}
+.section-title span { color: var(--blue); }
+.section-subtitle {
+  font-size: 1.05rem;
+  color: var(--muted);
+  line-height: 1.7;
+  max-width: 680px;
+}
+
+/* CARDS */
+.card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin-bottom: 24px;
+}
+.card-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.2rem;
+  font-weight: 600;
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.card-title .icon {
+  font-size: 1.3rem;
+}
+
+/* PROFESOR BOX */
+.profesor-box {
+  display: flex;
+  gap: 16px;
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-left: 4px solid var(--blue);
+  border-radius: 10px;
+  padding: 20px;
+  margin: 24px 0;
+}
+.profesor-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--blue), var(--purple));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.3rem;
+  flex-shrink: 0;
+}
+.profesor-text {
+  font-size: 0.95rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+.profesor-text strong { color: var(--blue); }
+
+/* DEFINITION BOX */
+.def-box {
+  background: rgba(56,189,248,0.05);
+  border: 1px solid rgba(56,189,248,0.25);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.def-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--blue);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+.def-text {
+  font-size: 0.95rem;
+  line-height: 1.8;
+}
+
+/* EXAMPLE BOX */
+.example-box {
+  background: rgba(74,222,128,0.05);
+  border: 1px solid rgba(74,222,128,0.2);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.example-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--green);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* WARNING BOX */
+.warn-box {
+  background: rgba(251,146,60,0.05);
+  border: 1px solid rgba(251,146,60,0.25);
+  border-radius: 10px;
+  padding: 20px 24px;
+  margin: 20px 0;
+}
+.warn-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--orange);
+  margin-bottom: 8px;
+  font-weight: 600;
+}
+
+/* CODE BLOCK */
+.code-block {
+  font-family: 'JetBrains Mono', monospace;
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  padding: 20px;
+  font-size: 0.82rem;
+  line-height: 1.9;
+  overflow-x: auto;
+  position: relative;
+  margin: 16px 0;
+}
+.code-line {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  padding: 2px 0;
+  transition: all 0.3s;
+  border-radius: 4px;
+  padding: 3px 8px;
+  margin: 1px -8px;
+}
+.code-line.highlight {
+  background: rgba(56,189,248,0.12);
+}
+.line-num {
+  color: var(--muted);
+  min-width: 20px;
+  text-align: right;
+  user-select: none;
+}
+.line-code { flex: 1; }
+.line-cost {
+  color: var(--orange);
+  font-size: 0.75rem;
+  font-style: italic;
+  white-space: nowrap;
+}
+
+/* MATH */
+.math {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(167,139,250,0.08);
+  border: 1px solid rgba(167,139,250,0.2);
+  border-radius: 6px;
+  padding: 3px 8px;
+  font-size: 0.9rem;
+  color: var(--purple);
+}
+.math-block {
+  font-family: 'JetBrains Mono', monospace;
+  background: rgba(167,139,250,0.06);
+  border: 1px solid rgba(167,139,250,0.15);
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 0.95rem;
+  color: var(--purple);
+  text-align: center;
+  line-height: 2;
+}
+
+/* STEP ANIMATION */
+.step-container {
+  margin: 24px 0;
+}
+.step {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 16px;
+  opacity: 0;
+  transform: translateY(10px);
+  transition: all 0.4s ease;
+}
+.step.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.step-num {
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  background: var(--bg3);
+  border: 2px solid var(--blue);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: var(--blue);
+  flex-shrink: 0;
+  margin-top: 2px;
+}
+.step-content { flex: 1; }
+.step-title {
+  font-weight: 600;
+  color: var(--blue);
+  margin-bottom: 4px;
+}
+.step-desc {
+  font-size: 0.9rem;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* INTERACTIVE CONTROLS */
+.controls {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin: 16px 0;
+}
+.btn {
+  padding: 8px 18px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  color: var(--text);
+  cursor: pointer;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.85rem;
+  transition: all 0.2s;
+}
+.btn:hover { border-color: var(--blue); color: var(--blue); }
+.btn.primary {
+  background: var(--blue);
+  color: #000;
+  border-color: var(--blue);
+  font-weight: 600;
+}
+.btn.primary:hover { background: #7dd3fc; }
+.btn.success { background: rgba(74,222,128,0.15); border-color: var(--green); color: var(--green); }
+.btn.danger { background: rgba(248,113,113,0.15); border-color: var(--red); color: var(--red); }
+
+/* QUIZ */
+.quiz-container {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 32px;
+  margin: 32px 0;
+}
+.quiz-q {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  color: #fff;
+}
+.quiz-options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 20px;
+}
+.quiz-opt {
+  padding: 14px 18px;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  background: var(--bg3);
+  cursor: pointer;
+  transition: all 0.2s;
+  font-size: 0.9rem;
+  line-height: 1.5;
+  font-family: 'DM Sans', sans-serif;
+  text-align: left;
+  color: var(--text);
+}
+.quiz-opt:hover:not(.disabled) { border-color: var(--blue); color: #fff; }
+.quiz-opt.correct { border-color: var(--green); background: rgba(74,222,128,0.1); color: var(--green); }
+.quiz-opt.wrong { border-color: var(--red); background: rgba(248,113,113,0.1); color: var(--red); }
+.quiz-opt.disabled { cursor: not-allowed; pointer-events: none; }
+.quiz-feedback {
+  padding: 14px 18px;
+  border-radius: 10px;
+  font-size: 0.9rem;
+  line-height: 1.7;
+  display: none;
+}
+.quiz-feedback.show { display: block; }
+.quiz-feedback.correct-fb { background: rgba(74,222,128,0.08); border: 1px solid rgba(74,222,128,0.3); color: var(--green); }
+.quiz-feedback.wrong-fb { background: rgba(248,113,113,0.08); border: 1px solid rgba(248,113,113,0.3); color: var(--red); }
+
+/* SCORE */
+#score-badge {
+  position: fixed;
+  top: 16px;
+  right: 20px;
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 6px 16px;
+  font-size: 0.8rem;
+  color: var(--yellow);
+  z-index: 200;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+/* COMPLEXITY CHART */
+#chart-wrap {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 20px 0;
+}
+canvas#complexChart { width: 100% !important; }
+
+/* SLIDER */
+.slider-wrap {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 16px 0;
+}
+.slider-wrap label { font-size: 0.85rem; color: var(--muted); white-space: nowrap; }
+input[type=range] {
+  flex: 1;
+  accent-color: var(--blue);
+  height: 4px;
+}
+.slider-val {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  color: var(--blue);
+  min-width: 50px;
+  text-align: right;
+}
+
+/* INDUCTION VISUAL */
+.domino-row {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin: 20px 0;
+  padding: 20px;
+  background: #0d1117;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+}
+.domino {
+  width: 20px;
+  height: 40px;
+  background: var(--border);
+  border-radius: 3px;
+  transition: all 0.3s;
+  position: relative;
+}
+.domino.fallen {
+  background: var(--green);
+  transform: rotate(90deg) translateX(10px);
+}
+.domino.active {
+  background: var(--blue);
+  animation: pulse 0.5s ease;
+}
+@keyframes pulse { 0%,100%{transform:scale(1)} 50%{transform:scale(1.2)} }
+
+/* GRAPH VISUAL */
+.graph-wrap {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  overflow: hidden;
+  margin: 20px 0;
+}
+.graph-wrap canvas { display: block; }
+
+/* NOTATION CARDS */
+.notation-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  margin: 24px 0;
+}
+.notation-card {
+  background: var(--bg3);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 16px;
+  transition: all 0.2s;
+  cursor: pointer;
+}
+.notation-card:hover { border-color: var(--blue); transform: translateY(-2px); }
+.notation-name {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 1.4rem;
+  font-weight: 700;
+  margin-bottom: 6px;
+}
+.notation-def { font-size: 0.82rem; color: var(--muted); line-height: 1.5; }
+.notation-formula {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--purple);
+  margin-top: 8px;
+  padding: 6px 10px;
+  background: rgba(167,139,250,0.07);
+  border-radius: 6px;
+}
+
+/* PROOF STEPS */
+.proof-step {
+  display: none;
+  animation: fadeIn 0.4s ease;
+}
+.proof-step.show { display: block; }
+@keyframes fadeIn { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
+.proof-block {
+  background: var(--bg3);
+  border-radius: 10px;
+  padding: 16px 20px;
+  margin: 12px 0;
+  border-left: 3px solid var(--blue);
+}
+.proof-block.base { border-left-color: var(--green); }
+.proof-block.hyp { border-left-color: var(--yellow); }
+.proof-block.step { border-left-color: var(--orange); }
+.proof-label {
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  margin-bottom: 8px;
+  font-weight: 700;
+}
+.proof-block.base .proof-label { color: var(--green); }
+.proof-block.hyp .proof-label { color: var(--yellow); }
+.proof-block.step .proof-label { color: var(--orange); }
+.proof-content {
+  font-size: 0.9rem;
+  line-height: 1.8;
+}
+.proof-content .highlight-math {
+  font-family: 'JetBrains Mono', monospace;
+  color: var(--purple);
+  background: rgba(167,139,250,0.08);
+  padding: 2px 6px;
+  border-radius: 4px;
+}
+
+/* SECTION NAV */
+.section-nav {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding-top: 48px;
+  border-top: 1px solid var(--border);
+  margin-top: 48px;
+}
+.section-nav .btn { padding: 12px 24px; }
+
+/* PSEUDO ANIMATOR */
+.pseudo-wrap {
+  position: relative;
+}
+.pseudo-controls {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 8px;
+  align-items: center;
+}
+.pseudo-status {
+  margin-left: auto;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.78rem;
+  color: var(--muted);
+}
+
+/* TABS */
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 24px;
+  gap: 0;
+}
+.tab {
+  padding: 10px 20px;
+  cursor: pointer;
+  font-size: 0.85rem;
+  color: var(--muted);
+  border-bottom: 2px solid transparent;
+  transition: all 0.2s;
+}
+.tab:hover { color: var(--text); }
+.tab.active { color: var(--blue); border-bottom-color: var(--blue); }
+
+/* TREE VIZ */
+.tree-wrap {
+  background: #0d1117;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  padding: 24px;
+  margin: 20px 0;
+  overflow-x: auto;
+}
+
+/* RESPONSIVE */
+@media (max-width: 768px) {
+  #sidebar { display: none; }
+  #progress-bar-wrap { left: 0; }
+  .section { padding: 40px 20px 60px; }
+  .notation-grid { grid-template-columns: 1fr; }
+}
+
+/* SCROLLBAR */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: var(--bg); }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 3px; }
+
+/* COMPLEXITY TABLE */
+.complexity-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.85rem;
+  margin: 16px 0;
+}
+.complexity-table th {
+  background: var(--bg3);
+  padding: 10px 14px;
+  text-align: left;
+  color: var(--blue);
+  font-weight: 600;
+  border-bottom: 1px solid var(--border);
+}
+.complexity-table td {
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border);
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.8rem;
+}
+.complexity-table tr:hover td { background: var(--bg3); }
+
+/* ALGO ANIMATOR */
+.array-wrap {
+  display: flex;
+  gap: 4px;
+  padding: 20px;
+  background: #0d1117;
+  border-radius: 10px;
+  border: 1px solid var(--border);
+  margin: 16px 0;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+.array-cell {
+  width: 44px; height: 44px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  border: 2px solid var(--border);
+  background: var(--bg3);
+  transition: all 0.3s;
+}
+.array-cell.active { border-color: var(--blue); background: rgba(56,189,248,0.15); color: var(--blue); }
+.array-cell.comparing { border-color: var(--yellow); background: rgba(251,191,36,0.15); color: var(--yellow); }
+.array-cell.sorted { border-color: var(--green); background: rgba(74,222,128,0.12); color: var(--green); }
+.array-cell.pivot { border-color: var(--orange); background: rgba(251,146,60,0.15); color: var(--orange); }
+
+/* INFO PILL */
+.pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 0.78rem;
+  font-weight: 600;
+  margin: 4px;
+}
+.pill.blue { background: rgba(56,189,248,0.1); color: var(--blue); border: 1px solid rgba(56,189,248,0.2); }
+.pill.green { background: rgba(74,222,128,0.1); color: var(--green); border: 1px solid rgba(74,222,128,0.2); }
+.pill.orange { background: rgba(251,146,60,0.1); color: var(--orange); border: 1px solid rgba(251,146,60,0.2); }
+.pill.purple { background: rgba(167,139,250,0.1); color: var(--purple); border: 1px solid rgba(167,139,250,0.2); }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav id="sidebar">
+  <h2>📐 CC — Unidad 1</h2>
+  <div class="nav-item active" onclick="showSection(0)" id="nav-0">
+    <div class="nav-dot"></div> 1. ¿Qué es un Algoritmo?
+  </div>
+  <div class="nav-item" onclick="showSection(1)" id="nav-1">
+    <div class="nav-dot"></div> 2. Inducción Matemática
+  </div>
+  <div class="nav-item" onclick="showSection(2)" id="nav-2">
+    <div class="nav-dot"></div> 3. Recursividad
+  </div>
+  <div class="nav-item" onclick="showSection(3)" id="nav-3">
+    <div class="nav-dot"></div> 4. Notación Asintótica
+  </div>
+  <div class="nav-item" onclick="showSection(4)" id="nav-4">
+    <div class="nav-dot"></div> 5. Análisis de Algoritmos
+  </div>
+  <div class="nav-item" onclick="showSection(5)" id="nav-5">
+    <div class="nav-dot"></div> 6. Grafos
+  </div>
+  <div class="nav-item" onclick="showSection(6)" id="nav-6">
+    <div class="nav-dot"></div> 7. Ordenamiento y Búsqueda
+  </div>
+  <div class="nav-item" onclick="showSection(7)" id="nav-7">
+    <div class="nav-dot"></div> 8. Quiz Final
+  </div>
+</nav>
+
+<!-- PROGRESS BAR -->
+<div id="progress-bar-wrap"><div id="progress-bar"></div></div>
+
+<!-- SCORE -->
+<div id="score-badge">⭐ Puntos: <span id="score-val">0</span></div>
+
+<!-- MAIN CONTENT -->
+<main id="main">
+
+<!-- ===== SECCIÓN 0: QUÉ ES UN ALGORITMO ===== -->
+<div class="section active" id="sec-0">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 1</div>
+    <h1 class="section-title">¿Qué es un <span>Algoritmo</span>?</h1>
+    <p class="section-subtitle">Antes de analizar la complejidad de algo, necesitamos saber exactamente qué estamos analizando. Vamos desde lo más básico.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text">
+      <strong>Profe:</strong> Imagina que le das instrucciones a alguien para hacer un sándwich. Si las instrucciones son claras, siempre terminan, y siempre producen un sándwich... ¡eso es un algoritmo! Ahora formalicémoslo.
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-label">📖 Definición Formal</div>
+    <div class="def-text">
+      Un <strong>algoritmo</strong> es un procedimiento computacional que tiene:<br><br>
+      <div class="step-container" id="algo-props">
+        <div class="step visible">
+          <div class="step-num">1</div>
+          <div class="step-content">
+            <div class="step-title">Entrada bien definida</div>
+            <div class="step-desc">Recibe datos estructurados: números, arreglos, dataframes. No puede ser vago sobre qué acepta.</div>
+          </div>
+        </div>
+        <div class="step visible">
+          <div class="step-num">2</div>
+          <div class="step-content">
+            <div class="step-title">Pasos efectivos y claros</div>
+            <div class="step-desc">Cada paso puede ejecutarse mecánicamente, sin necesitar interpretación humana.</div>
+          </div>
+        </div>
+        <div class="step visible">
+          <div class="step-num">3</div>
+          <div class="step-content">
+            <div class="step-title">Salida bien definida</div>
+            <div class="step-desc">Produce un resultado que resuelve el problema planteado.</div>
+          </div>
+        </div>
+        <div class="step visible">
+          <div class="step-num">4</div>
+          <div class="step-content">
+            <div class="step-title">Terminación o convergencia</div>
+            <div class="step-desc">O bien <em>termina</em> en pasos finitos (ordenar un arreglo), o <em>converge</em> con criterio explícito (SGD: "para cuando cambio &lt; ε").</div>
+          </div>
+        </div>
+        <div class="step visible">
+          <div class="step-num">5</div>
+          <div class="step-content">
+            <div class="step-title">Determinismo o control del azar</div>
+            <div class="step-desc">Si es estocástico (como random forest), la aleatoriedad debe controlarse con semilla.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="warn-box">
+    <div class="warn-label">⚠️ Error Común en Examen</div>
+    Este código <strong>NO es un algoritmo</strong>:<br><br>
+    <div class="code-block" style="margin-top:8px">
+      <div class="code-line"><span class="line-code" style="color:var(--red)">mientras Verdadero:</span></div>
+      <div class="code-line"><span class="line-code" style="padding-left:24px">imprimir "Hola"</span></div>
+    </div>
+    ¿Por qué? Porque <strong>no termina</strong>. Viola la propiedad de terminación.
+  </div>
+
+  <div class="example-box">
+    <div class="example-label">💡 Ejemplo Real del PDF</div>
+    <strong>¿Un sistema de recomendación activo 24/7 es un algoritmo?</strong><br><br>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:12px">
+      <div style="flex:1;min-width:200px;padding:14px;background:rgba(248,113,113,0.08);border:1px solid rgba(248,113,113,0.2);border-radius:8px">
+        <div style="color:var(--red);font-weight:700;margin-bottom:6px">❌ El sistema completo</div>
+        <div style="font-size:0.85rem">Corre sin parar → NO termina → NO es un algoritmo en sentido estricto</div>
+      </div>
+      <div style="flex:1;min-width:200px;padding:14px;background:rgba(74,222,128,0.08);border:1px solid rgba(74,222,128,0.2);border-radius:8px">
+        <div style="color:var(--green);font-weight:700;margin-bottom:6px">✅ La rutina de recálculo</div>
+        <div style="font-size:0.85rem">Recalcula cada hora, termina, produce resultado → SÍ es un algoritmo</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">🧠</span> ¿Por qué importa esta definición?</div>
+    <p style="font-size:0.9rem;line-height:1.8;color:var(--muted)">La definición formal nos permite hacer tres preguntas cruciales sobre cualquier algoritmo:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-top:14px">
+      <div class="pill blue">⚡ Eficiencia — ¿cuánto tarda?</div>
+      <div class="pill green">📈 Escalabilidad — ¿funciona con más datos?</div>
+      <div class="pill orange">✅ Correctitud — ¿resuelve lo que dice?</div>
+    </div>
+  </div>
+
+  <!-- MINI QUIZ -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Comprueba lo que aprendiste</div>
+    <div class="quiz-q">¿Cuál de los siguientes NO es un algoritmo válido?</div>
+    <div class="quiz-options" id="q0-opts">
+      <button class="quiz-opt" onclick="checkQuiz(0,0,'b')">A) Una función que calcula el factorial de n y devuelve el resultado</button>
+      <button class="quiz-opt" onclick="checkQuiz(0,1,'b')">B) Un bucle infinito que imprime "procesando..." sin parar</button>
+      <button class="quiz-opt" onclick="checkQuiz(0,2,'b')">C) Un algoritmo SGD con semilla fija que para cuando el error &lt; 0.001</button>
+      <button class="quiz-opt" onclick="checkQuiz(0,3,'b')">D) Merge Sort que ordena un arreglo de n elementos</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q0-fb-correct">✅ <strong>¡Correcto!</strong> El bucle infinito viola la propiedad de <strong>terminación</strong>. No importa que sus pasos sean claros — si nunca para, no es un algoritmo.</div>
+    <div class="quiz-feedback wrong-fb" id="q0-fb-wrong">❌ <strong>Incorrecto.</strong> La respuesta correcta es <strong>B</strong>. Un bucle infinito viola la propiedad de terminación del algoritmo.</div>
+  </div>
+
+  <div class="section-nav">
+    <div></div>
+    <button class="btn primary" onclick="showSection(1)">Siguiente: Inducción Matemática →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 1: INDUCCIÓN MATEMÁTICA ===== -->
+<div class="section" id="sec-1">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 2</div>
+    <h1 class="section-title">Inducción <span>Matemática</span></h1>
+    <p class="section-subtitle">La herramienta más poderosa para probar que un algoritmo funciona para CUALQUIER tamaño de entrada, no solo para los que probaste.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text">
+      <strong>Profe:</strong> Imagina una fila de dominós. Si el primero cae (caso base) y sabes que cuando cae cualquiera también cae el siguiente (paso inductivo)... ¿necesitas ver caer TODOS para saber que caerán todos? ¡No! Eso es inducción matemática.
+    </div>
+  </div>
+
+  <!-- DOMINÓ INTERACTIVO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Visualiza la Inducción</div>
+    <div class="domino-row" id="dominoes"></div>
+    <div class="controls">
+      <button class="btn primary" onclick="startDominoes()">▶ Tirar el primer dominó</button>
+      <button class="btn" onclick="resetDominoes()">🔄 Reiniciar</button>
+    </div>
+    <p style="font-size:0.82rem;color:var(--muted);margin-top:8px">El primer dominó = <strong style="color:var(--green)">caso base</strong>. Cada dominó que cae = <strong style="color:var(--yellow)">paso inductivo</strong>.</p>
+  </div>
+
+  <div class="def-box">
+    <div class="def-label">📖 Estructura de una Prueba por Inducción</div>
+    <div class="step-container">
+      <div class="step visible">
+        <div class="step-num" style="border-color:var(--green);color:var(--green)">B</div>
+        <div class="step-content">
+          <div class="step-title" style="color:var(--green)">Caso Base</div>
+          <div class="step-desc">Verificar que P(n₀) es verdadero (usualmente n₀ = 0 ó 1). Es el "primer dominó".</div>
+        </div>
+      </div>
+      <div class="step visible">
+        <div class="step-num" style="border-color:var(--yellow);color:var(--yellow)">H</div>
+        <div class="step-content">
+          <div class="step-title" style="color:var(--yellow)">Hipótesis Inductiva</div>
+          <div class="step-desc">Asumir que P(k) es verdadero para algún k ≥ n₀. <em>No es trampa</em> — es lo que se supone para demostrar el siguiente.</div>
+        </div>
+      </div>
+      <div class="step visible">
+        <div class="step-num" style="border-color:var(--orange);color:var(--orange)">P</div>
+        <div class="step-content">
+          <div class="step-title" style="color:var(--orange)">Paso Inductivo</div>
+          <div class="step-desc">Usando la hipótesis, demostrar que P(k+1) también es verdadero. Si esto se cumple, ¡ya probaste para todos los n!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- EJEMPLO 1: SUMA DE ENTEROS -->
+  <div class="card">
+    <div class="card-title"><span class="icon">✏️</span> Ejemplo 1: Suma de los primeros n enteros</div>
+    <p style="font-size:0.9rem;margin-bottom:16px;color:var(--muted)">Queremos probar que: <span class="math">1 + 2 + 3 + ... + n = n(n+1)/2</span> para todo n ≥ 1</p>
+
+    <div class="tabs">
+      <div class="tab active" onclick="showTab('ex1','suma')">📐 Prueba completa</div>
+      <div class="tab" onclick="showTab('ex1','verify')">🔢 Verificar con números</div>
+    </div>
+
+    <div id="ex1-suma">
+      <div id="proof1-steps">
+        <div class="proof-step show" id="p1-0">
+          <div class="proof-block base">
+            <div class="proof-label">🟢 CASO BASE — n = 1</div>
+            <div class="proof-content">
+              Lado izquierdo: la suma solo tiene un término → <span class="highlight-math">1</span><br>
+              Lado derecho: aplicamos la fórmula → <span class="highlight-math">1(1+1)/2 = 2/2 = 1</span><br>
+              ¿Son iguales? <strong style="color:var(--green)">✓ Sí. El caso base es verdadero.</strong>
+            </div>
+          </div>
+        </div>
+        <div class="proof-step show" id="p1-1">
+          <div class="proof-block hyp">
+            <div class="proof-label">🟡 HIPÓTESIS INDUCTIVA</div>
+            <div class="proof-content">
+              Supón que para algún k ≥ 1, la fórmula ya es verdadera:<br>
+              <span class="highlight-math">1 + 2 + ... + k = k(k+1)/2</span><br>
+              <em style="color:var(--muted);font-size:0.85rem">→ Esto lo asumimos como "dado". Ahora usémoslo para el siguiente caso.</em>
+            </div>
+          </div>
+        </div>
+        <div class="proof-step show" id="p1-2">
+          <div class="proof-block step">
+            <div class="proof-label">🟠 PASO INDUCTIVO — demostrar que vale para k+1</div>
+            <div class="proof-content">
+              Queremos probar: <span class="highlight-math">1 + 2 + ... + k + (k+1) = (k+1)(k+2)/2</span><br><br>
+              <strong>Empezamos con el lado izquierdo y manipulamos:</strong><br><br>
+              <span class="highlight-math">1 + 2 + ... + k + (k+1)</span><br>
+              &nbsp;&nbsp;&nbsp;= <span class="highlight-math">k(k+1)/2 + (k+1)</span> &nbsp;&nbsp;<em style="color:var(--muted)">[usamos la hipótesis]</em><br>
+              &nbsp;&nbsp;&nbsp;= <span class="highlight-math">(k+1)[k/2 + 1]</span> &nbsp;&nbsp;<em style="color:var(--muted)">[factorizamos (k+1)]</em><br>
+              &nbsp;&nbsp;&nbsp;= <span class="highlight-math">(k+1)(k+2)/2</span> &nbsp;&nbsp;<em style="color:var(--muted)">[simplificamos]</em><br><br>
+              <strong style="color:var(--green)">✅ Esto es exactamente lo que queríamos demostrar. ¡Prueba completa!</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="ex1-verify" style="display:none">
+      <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px">Mueve el slider para verificar la fórmula con valores concretos:</p>
+      <div class="slider-wrap">
+        <label>n =</label>
+        <input type="range" min="1" max="20" value="5" oninput="updateSumaVerify(this.value)" id="suma-slider">
+        <div class="slider-val" id="suma-n">5</div>
+      </div>
+      <div style="display:flex;gap:16px;flex-wrap:wrap;margin-top:16px">
+        <div style="flex:1;min-width:180px;padding:16px;background:var(--bg3);border-radius:10px;text-align:center">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Suma real (1+2+...+n)</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--blue)" id="suma-real">15</div>
+        </div>
+        <div style="flex:1;min-width:180px;padding:16px;background:var(--bg3);border-radius:10px;text-align:center">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Fórmula n(n+1)/2</div>
+          <div style="font-family:'JetBrains Mono',monospace;font-size:2rem;color:var(--green)" id="suma-formula">15</div>
+        </div>
+        <div style="flex:1;min-width:180px;padding:16px;background:var(--bg3);border-radius:10px;text-align:center">
+          <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">¿Son iguales?</div>
+          <div style="font-size:2rem" id="suma-match">✅</div>
+        </div>
+      </div>
+      <div id="suma-expansion" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;color:var(--muted);margin-top:12px;padding:10px;background:#0d1117;border-radius:8px"></div>
+    </div>
+  </div>
+
+  <!-- EJEMPLO 2: Ejercicio del PDF -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📋</span> Ejemplo 2 (del PDF): Probar que 3ⁿ > n³ para n ≥ 4</div>
+    <div id="proof2-container">
+      <div class="proof-block base">
+        <div class="proof-label">🟢 CASO BASE — n = 4</div>
+        <div class="proof-content">
+          Calculamos ambos lados:<br>
+          <span class="highlight-math">3⁴ = 3×3×3×3 = 81</span><br>
+          <span class="highlight-math">4³ = 4×4×4 = 64</span><br>
+          ¿Es 81 > 64? <strong style="color:var(--green)">✓ Sí.</strong>
+        </div>
+      </div>
+      <div class="proof-block hyp" style="margin-top:12px">
+        <div class="proof-label">🟡 HIPÓTESIS INDUCTIVA</div>
+        <div class="proof-content">
+          Asumimos que para algún k ≥ 4: <span class="highlight-math">3ᵏ > k³</span>
+        </div>
+      </div>
+      <div class="proof-block step" style="margin-top:12px">
+        <div class="proof-label">🟠 PASO INDUCTIVO — demostrar para k+1</div>
+        <div class="proof-content">
+          Queremos probar: <span class="highlight-math">3^(k+1) > (k+1)³</span><br><br>
+          <span class="highlight-math">3^(k+1) = 3 · 3ᵏ > 3k³</span> &nbsp;<em style="color:var(--muted)">[usamos hipótesis]</em><br><br>
+          Ahora necesitamos ver si <span class="highlight-math">3k³ > (k+1)³</span>:<br>
+          <span class="highlight-math">3k³ > k³ + 3k² + 3k + 1</span><br>
+          <span class="highlight-math">2k³ - 3k² - 3k - 1 > 0</span><br><br>
+          Para k=4: <span class="highlight-math">2(64) - 3(16) - 3(4) - 1 = 128 - 48 - 12 - 1 = 67 > 0</span> <strong style="color:var(--green)">✓</strong><br>
+          Y la función crece para k ≥ 4, por lo tanto siempre se cumple. <strong style="color:var(--green)">✅ QED</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ INDUCCIÓN -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Inducción Matemática</div>
+    <div class="quiz-q">En una prueba por inducción, la Hipótesis Inductiva sirve para...</div>
+    <div class="quiz-options" id="q1-opts">
+      <button class="quiz-opt" onclick="checkQuiz(1,0,'c')">A) Probar el caso base directamente</button>
+      <button class="quiz-opt" onclick="checkQuiz(1,1,'c')">B) Demostrar que la propiedad vale para n=0</button>
+      <button class="quiz-opt" onclick="checkQuiz(1,2,'c')">C) Asumir que P(k) es verdadero para usar esa suposición y demostrar P(k+1)</button>
+      <button class="quiz-opt" onclick="checkQuiz(1,3,'c')">D) Verificar la fórmula con números concretos</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q1-fb-correct">✅ <strong>¡Perfecto!</strong> La hipótesis inductiva es el "trampolín": la asumes verdadera para k y la usas para demostrar que vale para k+1. No es trampa, es lógica.</div>
+    <div class="quiz-feedback wrong-fb" id="q1-fb-wrong">❌ La respuesta es <strong>C</strong>. La hipótesis inductiva asume P(k) para luego demostrar P(k+1).</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(0)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(2)">Siguiente: Recursividad →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 2: RECURSIVIDAD ===== -->
+<div class="section" id="sec-2">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 3</div>
+    <h1 class="section-title">Definiciones <span>Recursivas</span></h1>
+    <p class="section-subtitle">Una función se define en términos de sí misma, con casos más pequeños. Es la base de Merge Sort, árboles de decisión y muchos algoritmos en ML.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text">
+      <strong>Profe:</strong> Para entender la recursión, primero tienes que entender la recursión. 😄 En serio: una definición recursiva siempre tiene <strong>caso base</strong> (para cuando es trivial) y <strong>paso recursivo</strong> (que reduce el problema a uno más pequeño).
+    </div>
+  </div>
+
+  <div class="def-box">
+    <div class="def-label">📖 Estructura de una Definición Recursiva</div>
+    <div class="step-container">
+      <div class="step visible">
+        <div class="step-num" style="border-color:var(--green);color:var(--green)">1</div>
+        <div class="step-content">
+          <div class="step-title" style="color:var(--green)">Caso Base</div>
+          <div class="step-desc">Una condición inicial que define el valor mínimo sin recurrir a sí misma. Sin él, ¡la recursión nunca termina!</div>
+        </div>
+      </div>
+      <div class="step visible">
+        <div class="step-num" style="border-color:var(--blue);color:var(--blue)">2</div>
+        <div class="step-content">
+          <div class="step-title" style="color:var(--blue)">Paso Recursivo</div>
+          <div class="step-desc">Define f(n) usando f(n-1) o instancias más pequeñas. Cada llamada se acerca al caso base.</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FACTORIAL INTERACTIVO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔢</span> Factorial: n! — Ejemplo Clásico</div>
+    <div class="math-block">
+      0! = 1 &nbsp;&nbsp;&nbsp;&nbsp;(caso base)<br>
+      n! = n · (n-1)! &nbsp;&nbsp;&nbsp;&nbsp;para n ≥ 1 (paso recursivo)
+    </div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px">Elige un valor de n y ve cómo se "desenrolla" la recursión:</p>
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="btn" onclick="showFactorial(3)">n = 3</button>
+      <button class="btn" onclick="showFactorial(4)">n = 4</button>
+      <button class="btn" onclick="showFactorial(5)">n = 5</button>
+      <button class="btn" onclick="showFactorial(6)">n = 6</button>
+    </div>
+    <div id="factorial-steps" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:2.2"></div>
+  </div>
+
+  <!-- FIBONACCI -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🌀</span> Fibonacci — Recursión con Dos Casos Base</div>
+    <div class="math-block">
+      F(0) = 0 &nbsp;&nbsp;&nbsp; F(1) = 1 &nbsp;&nbsp;&nbsp; (dos casos base)<br>
+      F(n) = F(n-1) + F(n-2) &nbsp;&nbsp; para n ≥ 2
+    </div>
+
+    <div class="profesor-box" style="margin:16px 0">
+      <div class="profesor-avatar">👨‍🏫</div>
+      <div class="profesor-text">
+        <strong>Profe:</strong> Fibonacci necesita <em>dos</em> casos base porque F(n) depende de los dos anteriores. Si solo tuviéramos F(0)=0, intentaríamos calcular F(1) = F(0) + F(-1)... ¡y F(-1) no está definido!
+      </div>
+    </div>
+
+    <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:16px">
+      <button class="btn" onclick="showFib(5)">F(5)</button>
+      <button class="btn" onclick="showFib(7)">F(7)</button>
+      <button class="btn" onclick="showFib(8)">F(8)</button>
+    </div>
+    <div id="fib-steps" style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;line-height:2.2"></div>
+
+    <div class="example-box" style="margin-top:16px">
+      <div class="example-label">📐 Prueba con inducción fuerte (del PDF)</div>
+      <strong>Probar: F(n) &lt; 2ⁿ para todo n ≥ 0</strong><br><br>
+      <div class="proof-block base" style="margin-top:8px">
+        <div class="proof-label">🟢 CASOS BASE</div>
+        <div class="proof-content">
+          n=0: F(0) = 0 &lt; 1 = 2⁰ ✓<br>
+          n=1: F(1) = 1 &lt; 2 = 2¹ ✓
+        </div>
+      </div>
+      <div class="proof-block hyp" style="margin-top:8px">
+        <div class="proof-label">🟡 HIPÓTESIS FUERTE</div>
+        <div class="proof-content">Supón F(k) &lt; 2ᵏ para <em>todo</em> k &lt; n (inducción fuerte: asumimos para todos los anteriores)</div>
+      </div>
+      <div class="proof-block step" style="margin-top:8px">
+        <div class="proof-label">🟠 PASO INDUCTIVO</div>
+        <div class="proof-content">
+          <span class="highlight-math">F(n) = F(n-1) + F(n-2)</span><br>
+          <span class="highlight-math">&lt; 2^(n-1) + 2^(n-2)</span> &nbsp;<em>[hipótesis]</em><br>
+          <span class="highlight-math">= 2^(n-2) · (2 + 1) = 3 · 2^(n-2)</span><br>
+          <span class="highlight-math">&lt; 4 · 2^(n-2) = 2ⁿ</span> &nbsp;<strong style="color:var(--green)">✅</strong>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ RECURSIÓN -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Recursividad</div>
+    <div class="quiz-q">¿Cuál es el resultado de calcular la secuencia a₅ si a₁ = 1 y aₙ = 2aₙ₋₁ + 1 para n ≥ 2?</div>
+    <div class="quiz-options" id="q2-opts">
+      <button class="quiz-opt" onclick="checkQuiz(2,0,'d')">A) 15</button>
+      <button class="quiz-opt" onclick="checkQuiz(2,1,'d')">B) 16</button>
+      <button class="quiz-opt" onclick="checkQuiz(2,2,'d')">C) 30</button>
+      <button class="quiz-opt" onclick="checkQuiz(2,3,'d')">D) 31</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q2-fb-correct">✅ <strong>¡Correcto!</strong> a₂=3, a₃=7, a₄=15, a₅=31. En general aₙ = 2ⁿ - 1 (¡probado por inducción en el PDF!)</div>
+    <div class="quiz-feedback wrong-fb" id="q2-fb-wrong">❌ Calculemos paso a paso: a₂=2(1)+1=3, a₃=2(3)+1=7, a₄=2(7)+1=15, a₅=2(15)+1=<strong>31</strong>. Respuesta D.</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(1)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(3)">Siguiente: Notación Asintótica →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 3: NOTACIÓN ASINTÓTICA ===== -->
+<div class="section" id="sec-3">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 4</div>
+    <h1 class="section-title">Notación <span>Asintótica</span></h1>
+    <p class="section-subtitle">O, Ω, Θ, o, ω — el lenguaje para comparar qué tan rápido crecen los algoritmos cuando los datos crecen.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text">
+      <strong>Profe:</strong> Imagina dos autos. No me importa cuál va más rápido en un semáforo. Me importa: si duplicamos la autopista, ¿cuál llega antes? La notación asintótica describe el comportamiento cuando n se vuelve <em>muy grande</em>, ignorando constantes y términos pequeños.
+    </div>
+  </div>
+
+  <!-- LAS 5 NOTACIONES -->
+  <div class="notation-grid">
+    <div class="notation-card" onclick="showNotation('bigO')">
+      <div class="notation-name" style="color:var(--blue)">O(g)</div>
+      <div class="def-text" style="font-size:0.85rem"><strong>Cota Superior</strong></div>
+      <div class="notation-def">"f crece a lo mucho tan rápido como g"</div>
+      <div class="notation-formula">∃ c,n₀ : f(n) ≤ c·g(n) para n ≥ n₀</div>
+    </div>
+    <div class="notation-card" onclick="showNotation('bigOmega')">
+      <div class="notation-name" style="color:var(--green)">Ω(g)</div>
+      <div class="def-text" style="font-size:0.85rem"><strong>Cota Inferior</strong></div>
+      <div class="notation-def">"f crece al menos tan rápido como g"</div>
+      <div class="notation-formula">∃ c,n₀ : c·g(n) ≤ f(n) para n ≥ n₀</div>
+    </div>
+    <div class="notation-card" onclick="showNotation('bigTheta')">
+      <div class="notation-name" style="color:var(--yellow)">Θ(g)</div>
+      <div class="def-text" style="font-size:0.85rem"><strong>Cota Ajustada</strong></div>
+      <div class="notation-def">"f crece exactamente igual que g"</div>
+      <div class="notation-formula">f = O(g) Y f = Ω(g)</div>
+    </div>
+    <div class="notation-card" onclick="showNotation('smallo')">
+      <div class="notation-name" style="color:var(--orange)">o(g)</div>
+      <div class="def-text" style="font-size:0.85rem"><strong>Cota Superior Estricta</strong></div>
+      <div class="notation-def">"f crece estrictamente más lento que g"</div>
+      <div class="notation-formula">lím f(n)/g(n) = 0</div>
+    </div>
+    <div class="notation-card" onclick="showNotation('smallomega')" style="grid-column:span 1">
+      <div class="notation-name" style="color:var(--purple)">ω(g)</div>
+      <div class="def-text" style="font-size:0.85rem"><strong>Cota Inferior Estricta</strong></div>
+      <div class="notation-def">"f crece estrictamente más rápido que g"</div>
+      <div class="notation-formula">lím f(n)/g(n) = ∞</div>
+    </div>
+  </div>
+
+  <!-- DETAIL PANEL -->
+  <div id="notation-detail" style="display:none" class="def-box">
+    <div id="notation-detail-content"></div>
+  </div>
+
+  <!-- CÓMO USAR LÍMITES -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎯</span> Truco con Límites (del PDF)</div>
+    <p style="font-size:0.9rem;color:var(--muted);margin-bottom:16px">Para clasificar f(n) respecto a g(n), calcula <span class="math">lím[n→∞] f(n)/g(n)</span>:</p>
+    <table class="complexity-table">
+      <tr><th>Resultado del límite</th><th>Relación</th><th>Significa</th></tr>
+      <tr><td style="color:var(--orange)">= 0</td><td><span class="math" style="color:var(--orange)">f = o(g)</span> y también <span class="math" style="color:var(--blue)">f = O(g)</span></td><td>f crece más lento</td></tr>
+      <tr><td style="color:var(--yellow)">= c &gt; 0</td><td><span class="math" style="color:var(--yellow)">f = Θ(g)</span></td><td>f y g crecen igual</td></tr>
+      <tr><td style="color:var(--purple)">= ∞</td><td><span class="math" style="color:var(--purple)">f = ω(g)</span> y también <span class="math" style="color:var(--green)">f = Ω(g)</span></td><td>f crece más rápido</td></tr>
+    </table>
+  </div>
+
+  <!-- JERARQUÍA VISUAL -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📊</span> Jerarquía de Complejidades</div>
+    <div id="hierarchy-visual" style="display:flex;align-items:center;gap:0;flex-wrap:wrap;padding:16px;background:#0d1117;border-radius:10px;border:1px solid var(--border);font-family:'JetBrains Mono',monospace;font-size:0.78rem;line-height:2.5">
+    </div>
+    <div id="chart-wrap" style="margin-top:16px">
+      <div class="slider-wrap">
+        <label>n máximo =</label>
+        <input type="range" min="5" max="50" value="20" oninput="updateComplexChart(this.value)" id="complex-slider">
+        <div class="slider-val" id="complex-n">20</div>
+      </div>
+      <canvas id="complexChart" height="300"></canvas>
+    </div>
+  </div>
+
+  <!-- EJEMPLO DEL PDF -->
+  <div class="card">
+    <div class="card-title"><span class="icon">✏️</span> Ejemplo resuelto (del PDF): f(n) = 4n³ + 2n² + n + 5</div>
+    <div class="profesor-box" style="margin-bottom:16px">
+      <div class="profesor-avatar">👨‍🏫</div>
+      <div class="profesor-text"><strong>Profe:</strong> Cuando tenemos una suma de términos, el término de mayor grado domina cuando n crece. Los demás se vuelven insignificantes.</div>
+    </div>
+    <div class="proof-block step">
+      <div class="proof-label">Demostrar que f(n) = O(n³)</div>
+      <div class="proof-content">
+        Para n ≥ 1, cada término se puede acotar por n³:<br><br>
+        <span class="highlight-math">4n³ ≤ 4n³</span><br>
+        <span class="highlight-math">2n² ≤ 2n³</span> &nbsp;<em style="color:var(--muted)">[porque n² ≤ n³ para n ≥ 1]</em><br>
+        <span class="highlight-math">n ≤ n³</span><br>
+        <span class="highlight-math">5 ≤ 5n³</span><br><br>
+        Sumando: <span class="highlight-math">4n³ + 2n² + n + 5 ≤ (4+2+1+5)n³ = 12n³</span><br><br>
+        Por lo tanto: <strong style="color:var(--green)">f(n) = O(n³) con c = 12, n₀ = 1 ✅</strong>
+      </div>
+    </div>
+  </div>
+
+  <!-- QUIZ NOTACIÓN -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Notación Asintótica</div>
+    <div class="quiz-q">Sea f(n) = n log n. ¿Cuál es la relación correcta con g(n) = n²?</div>
+    <div class="quiz-options" id="q3-opts">
+      <button class="quiz-opt" onclick="checkQuiz(3,0,'a')">A) f(n) = o(n²), porque lím[n·log(n)/n²] = lím[log(n)/n] = 0</button>
+      <button class="quiz-opt" onclick="checkQuiz(3,1,'a')">B) f(n) = Θ(n²)</button>
+      <button class="quiz-opt" onclick="checkQuiz(3,2,'a')">C) f(n) = ω(n²)</button>
+      <button class="quiz-opt" onclick="checkQuiz(3,3,'a')">D) f(n) = Ω(n²)</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q3-fb-correct">✅ <strong>¡Excelente!</strong> lím[n·log(n)/n²] = lím[log(n)/n] = 0 (L'Hôpital: 1/n → 0). Como el límite es 0, f es small-o y también Big-O de g.</div>
+    <div class="quiz-feedback wrong-fb" id="q3-fb-wrong">❌ La respuesta es <strong>A</strong>. El límite de (n·log n)/n² = log(n)/n → 0, lo que significa f(n) = o(n²).</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(2)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(4)">Siguiente: Análisis de Algoritmos →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 4: ANÁLISIS ===== -->
+<div class="section" id="sec-4">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 5</div>
+    <h1 class="section-title">Análisis de <span>Algoritmos</span></h1>
+    <p class="section-subtitle">Aprende a leer pseudocódigo y derivar su complejidad Big-O línea por línea, como lo hace el profesor en pizarrón.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text"><strong>Profe:</strong> La regla de oro es: <strong>cuenta cuántas veces se ejecuta cada línea</strong> y suma todo. Luego te quedas con el término que crece más rápido.</div>
+  </div>
+
+  <div class="card">
+    <div class="card-title"><span class="icon">📏</span> Reglas de Conteo</div>
+    <table class="complexity-table">
+      <tr><th>Estructura</th><th>Complejidad</th><th>Razón</th></tr>
+      <tr><td>Asignación simple</td><td><span class="math">O(1)</span></td><td>1 operación siempre</td></tr>
+      <tr><td>if/else</td><td><span class="math">O(max(rama1, rama2))</span></td><td>Se ejecuta una sola rama</td></tr>
+      <tr><td>for i = 1 to n</td><td><span class="math">O(n)</span></td><td>n iteraciones</td></tr>
+      <tr><td>Bucles anidados (n×n)</td><td><span class="math">O(n²)</span></td><td>n×n operaciones</td></tr>
+      <tr><td>while i ≤ n; i=i*2</td><td><span class="math">O(log n)</span></td><td>i: 1,2,4,8...→ log₂(n) pasos</td></tr>
+      <tr><td>Dos bucles seguidos</td><td><span class="math">O(max(T₁, T₂))</span></td><td>Término dominante</td></tr>
+    </table>
+  </div>
+
+  <!-- PSEUDOCÓDIGO ANIMADO 1 -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎬</span> Pseudocódigo Animado — Correlaciones (del PDF)</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px">Presiona ▶ para analizar línea por línea:</p>
+    <div class="pseudo-wrap">
+      <div class="pseudo-controls">
+        <button class="btn" onclick="pseudoPlay('p1')">▶ Play</button>
+        <button class="btn" onclick="pseudoStep('p1')">⏭ Paso</button>
+        <button class="btn" onclick="pseudoReset('p1')">🔄 Reset</button>
+        <div class="pseudo-status" id="p1-status">Listo</div>
+      </div>
+      <div class="code-block" id="p1-code">
+        <div class="code-line" id="p1-l0"><span class="line-num">1</span><span class="line-code">n ← len(dataset)</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l1"><span class="line-num">2</span><span class="line-code">m ← n_features(dataset)</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l2"><span class="line-num">3</span><span class="line-code" style="color:var(--blue)">for i ← 1 to m do</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l3"><span class="line-num">4</span><span class="line-code" style="color:var(--green);padding-left:20px">for j ← i+1 to m do</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l4"><span class="line-num">5</span><span class="line-code" style="color:var(--yellow);padding-left:40px">corr ← 0</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l5"><span class="line-num">6</span><span class="line-code" style="color:var(--purple);padding-left:40px">for k ← 1 to n do</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l6"><span class="line-num">7</span><span class="line-code" style="padding-left:60px">corr ← corr + dataset[k,i] × dataset[k,j]</span><span class="line-cost"></span></div>
+        <div class="code-line" id="p1-l7"><span class="line-num">8</span><span class="line-code" style="padding-left:40px">correlation[i,j] ← corr/n</span><span class="line-cost"></span></div>
+      </div>
+      <div id="p1-explanation" class="example-box" style="display:none;margin-top:12px">
+        <div class="example-label">💡 Análisis</div>
+        <div id="p1-exp-text"></div>
+      </div>
+    </div>
+    <div id="p1-result" style="display:none" class="math-block">
+      Resultado: O(m²·n)<br>
+      <span style="font-size:0.8rem;color:var(--muted)">Con d variables y n filas: O(d²n) — cuadrático en variables, lineal en datos</span>
+    </div>
+  </div>
+
+  <!-- BÚSQUEDA BINARIA -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔍</span> Búsqueda Binaria — O(log n)</div>
+    <div class="profesor-box">
+      <div class="profesor-avatar">👨‍🏫</div>
+      <div class="profesor-text"><strong>Profe:</strong> Cada iteración divide el espacio de búsqueda exactamente a la mitad. Si empezamos con n elementos, tras 1 paso tenemos n/2, tras 2 tenemos n/4... ¿cuántos pasos hasta llegar a 1? Exactamente log₂(n).</div>
+    </div>
+    <div style="margin:16px 0">
+      <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+        <button class="btn" onclick="startBinarySearch()">▶ Buscar x=43 en [3,9,10,27,38,43,82]</button>
+        <button class="btn" onclick="resetBinarySearch()">🔄 Reiniciar</button>
+      </div>
+      <div class="array-wrap" id="bs-array"></div>
+      <div id="bs-log" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;margin-top:12px;min-height:60px;padding:12px;background:#0d1117;border-radius:8px;line-height:2"></div>
+    </div>
+    <div class="math-block">
+      T(n) = T(n/2) + c &nbsp;&nbsp;→&nbsp;&nbsp; T(n) = Θ(log n)
+    </div>
+  </div>
+
+  <!-- MERGE SORT -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔀</span> Merge Sort — O(n log n)</div>
+    <div class="profesor-box">
+      <div class="profesor-avatar">👨‍🏫</div>
+      <div class="profesor-text"><strong>Profe:</strong> Merge Sort es divide y vencerás. Divide el arreglo en mitades (log n niveles), y en cada nivel hace O(n) trabajo de fusión. Total: n × log n. El árbol de recursión lo hace muy visual.</div>
+    </div>
+    <div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+      <button class="btn primary" onclick="startMergeSort()">▶ Animar Merge Sort [38,27,43,3]</button>
+      <button class="btn" onclick="resetMergeSort()">🔄 Reset</button>
+    </div>
+    <div class="array-wrap" id="ms-array"></div>
+    <div id="ms-tree" class="tree-wrap" style="min-height:60px"></div>
+    <div id="ms-log" style="font-family:'JetBrains Mono',monospace;font-size:0.8rem;margin-top:8px;padding:12px;background:#0d1117;border-radius:8px;line-height:2;min-height:40px"></div>
+    <div class="math-block" style="margin-top:16px">
+      T(n) = 2T(n/2) + O(n) &nbsp;→&nbsp; Teorema Maestro caso 2 &nbsp;→&nbsp; <strong>Θ(n log n)</strong>
+    </div>
+  </div>
+
+  <!-- QUIZ ANÁLISIS -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Análisis Big-O</div>
+    <div class="quiz-q">¿Cuál es la complejidad de este pseudocódigo?<br><br>
+    <span style="font-family:'JetBrains Mono',monospace;font-size:0.85rem;display:block;padding:12px;background:#0d1117;border-radius:8px;margin-top:8px;color:var(--text)">
+    i ← 1<br>
+    while i &lt; n do<br>
+    &nbsp;&nbsp;imprimir i<br>
+    &nbsp;&nbsp;i ← i * 2<br>
+    end while
+    </span></div>
+    <div class="quiz-options" id="q4-opts">
+      <button class="quiz-opt" onclick="checkQuiz(4,0,'b')">A) O(n)</button>
+      <button class="quiz-opt" onclick="checkQuiz(4,1,'b')">B) O(log n)</button>
+      <button class="quiz-opt" onclick="checkQuiz(4,2,'b')">C) O(n²)</button>
+      <button class="quiz-opt" onclick="checkQuiz(4,3,'b')">D) O(1)</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q4-fb-correct">✅ <strong>¡Correcto!</strong> i toma los valores 1, 2, 4, 8, 16... (potencias de 2). Termina cuando i ≥ n, es decir tras log₂(n) iteraciones → O(log n).</div>
+    <div class="quiz-feedback wrong-fb" id="q4-fb-wrong">❌ La respuesta es <strong>B: O(log n)</strong>. Como i se duplica en cada paso (i=1,2,4,8...), solo hacemos log₂(n) iteraciones.</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(3)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(5)">Siguiente: Grafos →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 5: GRAFOS ===== -->
+<div class="section" id="sec-5">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 6</div>
+    <h1 class="section-title">Grafos y sus <span>Representaciones</span></h1>
+    <p class="section-subtitle">Estructuras fundamentales para modelar redes sociales, recomendaciones, fraude financiero y más.</p>
+  </div>
+
+  <div class="profesor-box">
+    <div class="profesor-avatar">👨‍🏫</div>
+    <div class="profesor-text"><strong>Profe:</strong> Un grafo es solo puntos conectados por líneas. Los puntos son <strong style="color:var(--blue)">vértices</strong> y las líneas son <strong style="color:var(--green)">aristas</strong>. Formalmente: G = (V, E). Simple. Pero poderoso.</div>
+  </div>
+
+  <div class="notation-grid">
+    <div class="notation-card">
+      <div class="notation-name" style="color:var(--blue);font-size:1rem">Grafo No Dirigido</div>
+      <div class="notation-def">Las aristas no tienen dirección. Si A conecta con B, entonces B conecta con A.<br><br>Ejemplo: <em>amistades en Facebook</em></div>
+      <div class="notation-formula">E ⊆ {{u,v} | u,v ∈ V}</div>
+    </div>
+    <div class="notation-card">
+      <div class="notation-name" style="color:var(--green);font-size:1rem">Grafo Dirigido</div>
+      <div class="notation-def">Las aristas tienen dirección (arcos). A→B no implica B→A.<br><br>Ejemplo: <em>seguidores en Twitter</em></div>
+      <div class="notation-formula">E ⊆ V × V (pares ordenados)</div>
+    </div>
+  </div>
+
+  <!-- VISUALIZACIÓN GRAFO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🕸️</span> Grafo Interactivo — Representaciones</div>
+    <p style="font-size:0.85rem;color:var(--muted);margin-bottom:12px">Selecciona un grafo predefinido y ve sus representaciones:</p>
+    <div class="controls" style="margin-bottom:16px">
+      <button class="btn primary" onclick="loadGraph('social')">Red Social</button>
+      <button class="btn" onclick="loadGraph('directed')">Grafo Dirigido</button>
+      <button class="btn" onclick="loadGraph('streaming')">Streaming (PDF)</button>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+      <div>
+        <p style="font-size:0.75rem;text-transform:uppercase;color:var(--muted);margin-bottom:8px;letter-spacing:0.1em">Grafo Visual</p>
+        <div class="graph-wrap"><canvas id="graphCanvas" width="300" height="220"></canvas></div>
+      </div>
+      <div>
+        <p style="font-size:0.75rem;text-transform:uppercase;color:var(--muted);margin-bottom:8px;letter-spacing:0.1em">Matriz de Adyacencia</p>
+        <div id="adj-matrix" style="font-family:'JetBrains Mono',monospace;font-size:0.78rem;padding:12px;background:#0d1117;border-radius:8px;border:1px solid var(--border);line-height:1.8"></div>
+      </div>
+    </div>
+    <div style="margin-top:16px">
+      <p style="font-size:0.75rem;text-transform:uppercase;color:var(--muted);margin-bottom:8px;letter-spacing:0.1em">Lista de Adyacencia</p>
+      <div id="adj-list" style="font-family:'JetBrains Mono',monospace;font-size:0.82rem;padding:12px;background:#0d1117;border-radius:8px;border:1px solid var(--border);line-height:2"></div>
+    </div>
+  </div>
+
+  <!-- COMPARACIÓN REPRESENTACIONES -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚖️</span> Comparación de Representaciones</div>
+    <table class="complexity-table">
+      <tr><th>Representación</th><th>Espacio</th><th>Cuándo usarla</th></tr>
+      <tr><td><strong style="color:var(--blue)">Matriz de Adyacencia</strong></td><td><span class="math">O(V²)</span></td><td>Grafos densos, verificar aristas rápido</td></tr>
+      <tr><td><strong style="color:var(--green)">Lista de Adyacencia</strong></td><td><span class="math">O(V + E)</span></td><td>Grafos dispersos (mayoría de redes reales)</td></tr>
+      <tr><td><strong style="color:var(--orange)">Lista de Aristas</strong></td><td><span class="math">O(E)</span></td><td>Algoritmo de Kruskal, MST</td></tr>
+      <tr><td><strong style="color:var(--purple)">Matriz de Incidencia</strong></td><td><span class="math">O(V·E)</span></td><td>Multigrafos, análisis de aristas</td></tr>
+    </table>
+  </div>
+
+  <!-- QUIZ GRAFOS -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Grafos</div>
+    <div class="quiz-q">En el ejemplo del PDF: usuario A ve X e Y, usuario B ve Y y Z, usuario C ve X. ¿Qué tipo de grafo es más apropiado para modelar este sistema de recomendación?</div>
+    <div class="quiz-options" id="q5-opts">
+      <button class="quiz-opt" onclick="checkQuiz(5,0,'c')">A) Grafo dirigido con pesos</button>
+      <button class="quiz-opt" onclick="checkQuiz(5,1,'c')">B) Árbol binario</button>
+      <button class="quiz-opt" onclick="checkQuiz(5,2,'c')">C) Grafo bipartito (usuarios e ítems son dos conjuntos separados)</button>
+      <button class="quiz-opt" onclick="checkQuiz(5,3,'c')">D) Grafo completo</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q5-fb-correct">✅ <strong>¡Correcto!</strong> Los sistemas de recomendación usan grafos bipartitos: un conjunto de nodos son usuarios {A,B,C} y el otro son películas {X,Y,Z}. Las aristas solo van de usuarios a películas.</div>
+    <div class="quiz-feedback wrong-fb" id="q5-fb-wrong">❌ La respuesta es <strong>C: grafo bipartito</strong>. Los dos conjuntos disjuntos son usuarios y películas. Las aristas representan "usuario vio película".</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(4)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(6)">Siguiente: Ordenamiento →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 6: ORDENAMIENTO ===== -->
+<div class="section" id="sec-6">
+  <div class="section-hero">
+    <div class="section-tag">Módulo 7</div>
+    <h1 class="section-title">Ordenamiento y <span>Recurrencias</span></h1>
+    <p class="section-subtitle">Merge Sort, Búsqueda Binaria y el Teorema Maestro: los tres pilares del análisis de algoritmos recursivos.</p>
+  </div>
+
+  <!-- TEOREMA MAESTRO -->
+  <div class="card">
+    <div class="card-title"><span class="icon">👑</span> Teorema Maestro</div>
+    <div class="profesor-box">
+      <div class="profesor-avatar">👨‍🏫</div>
+      <div class="profesor-text"><strong>Profe:</strong> Cuando un algoritmo recursivo hace <em>a</em> llamadas de tamaño n/b y el trabajo extra es f(n), el Teorema Maestro te da la complejidad en un solo paso.</div>
+    </div>
+    <div class="math-block">
+      T(n) = aT(n/b) + f(n)<br>
+      <span style="font-size:0.8rem;color:var(--muted)">a ≥ 1 subproblemas, de tamaño n/b, costo extra f(n)</span>
+    </div>
+    <div style="margin-top:16px">
+      <div id="tm-cases">
+        <div class="proof-block base" style="margin-bottom:10px">
+          <div class="proof-label">CASO 1: f(n) = O(n^c) con c &lt; log_b(a)</div>
+          <div class="proof-content">Los subproblemas dominan → <span class="highlight-math">T(n) = Θ(n^(log_b a))</span></div>
+        </div>
+        <div class="proof-block hyp" style="margin-bottom:10px">
+          <div class="proof-label">CASO 2: f(n) = Θ(n^(log_b a))</div>
+          <div class="proof-content">Ambos empatan → <span class="highlight-math">T(n) = Θ(n^(log_b a) · log n)</span></div>
+        </div>
+        <div class="proof-block step">
+          <div class="proof-label">CASO 3: f(n) = Ω(n^c) con c &gt; log_b(a)</div>
+          <div class="proof-content">El trabajo extra domina → <span class="highlight-math">T(n) = Θ(f(n))</span></div>
+        </div>
+      </div>
+    </div>
+    <div class="example-box" style="margin-top:16px">
+      <div class="example-label">✏️ Merge Sort — Aplicar el Teorema</div>
+      <span class="highlight-math">T(n) = 2T(n/2) + O(n)</span><br><br>
+      a = 2, b = 2, f(n) = n<br>
+      c_crítico = log₂(2) = <span class="highlight-math">1</span><br>
+      f(n) = n = Θ(n¹) → <strong>Caso 2</strong><br><br>
+      Resultado: <strong style="color:var(--green)">T(n) = Θ(n log n) ✅</strong>
+    </div>
+    <div class="example-box" style="margin-top:12px">
+      <div class="example-label">✏️ Búsqueda Binaria — Aplicar el Teorema</div>
+      <span class="highlight-math">T(n) = T(n/2) + c</span><br><br>
+      a = 1, b = 2, f(n) = c (constante)<br>
+      c_crítico = log₂(1) = <span class="highlight-math">0</span><br>
+      f(n) = O(n⁰) → <strong>Caso 2</strong><br><br>
+      Resultado: <strong style="color:var(--green)">T(n) = Θ(log n) ✅</strong>
+    </div>
+  </div>
+
+  <!-- QUIZ -->
+  <div class="quiz-container">
+    <div style="font-size:0.75rem;text-transform:uppercase;letter-spacing:0.1em;color:var(--blue);margin-bottom:12px">🎯 Quiz — Teorema Maestro</div>
+    <div class="quiz-q">Aplica el Teorema Maestro a: T(n) = 4T(n/2) + n</div>
+    <div class="quiz-options" id="q6-opts">
+      <button class="quiz-opt" onclick="checkQuiz(6,0,'b')">A) Θ(n log n)</button>
+      <button class="quiz-opt" onclick="checkQuiz(6,1,'b')">B) Θ(n²)</button>
+      <button class="quiz-opt" onclick="checkQuiz(6,2,'b')">C) Θ(n)</button>
+      <button class="quiz-opt" onclick="checkQuiz(6,3,'b')">D) Θ(n² log n)</button>
+    </div>
+    <div class="quiz-feedback correct-fb" id="q6-fb-correct">✅ <strong>¡Correcto!</strong> a=4, b=2, c_crítico = log₂(4) = 2. f(n) = n = O(n¹) y 1 &lt; 2 → Caso 1 → T(n) = Θ(n²).</div>
+    <div class="quiz-feedback wrong-fb" id="q6-fb-wrong">❌ Respuesta: <strong>B — Θ(n²)</strong>. a=4, b=2, c_crítico = log₂(4) = 2. f(n)=n=O(n¹), y 1 &lt; 2 → Caso 1 → T(n) = Θ(n^(log₂4)) = Θ(n²).</div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(5)">← Anterior</button>
+    <button class="btn primary" onclick="showSection(7)">Quiz Final →</button>
+  </div>
+</div>
+
+<!-- ===== SECCIÓN 7: QUIZ FINAL ===== -->
+<div class="section" id="sec-7">
+  <div class="section-hero">
+    <div class="section-tag">Quiz Final</div>
+    <h1 class="section-title">Repaso <span>Completo</span></h1>
+    <p class="section-subtitle">Preguntas integradoras de todos los temas de la Unidad 1. ¡Prepárate para el examen!</p>
+  </div>
+
+  <div id="final-quiz-container">
+    <!-- Quiz pregunta 1 -->
+    <div class="quiz-container">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Pregunta 1 de 4 — Inducción</div>
+      <div class="quiz-q">¿Qué debes probar en el paso inductivo para demostrar que P(n) vale para todo n ≥ 1?</div>
+      <div class="quiz-options" id="qf1-opts">
+        <button class="quiz-opt" onclick="checkQuiz('f1',0,'d')">A) Que P(1) es verdadero</button>
+        <button class="quiz-opt" onclick="checkQuiz('f1',1,'d')">B) Que P(n) vale para n=2,3,4...</button>
+        <button class="quiz-opt" onclick="checkQuiz('f1',2,'d')">C) Que P(k-1) implica P(k)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f1',3,'d')">D) Que P(k) implica P(k+1)</button>
+      </div>
+      <div class="quiz-feedback correct-fb" id="qf1-fb-correct">✅ El paso inductivo demuestra que si P(k) es verdad → P(k+1) también. Esa implicación, junto al caso base, garantiza que vale para todos los naturales.</div>
+      <div class="quiz-feedback wrong-fb" id="qf1-fb-wrong">❌ Respuesta D. El paso inductivo prueba P(k) ⟹ P(k+1), no verifica casos individuales.</div>
+    </div>
+
+    <div class="quiz-container">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Pregunta 2 de 4 — Notación Asintótica</div>
+      <div class="quiz-q">¿Cuál afirmación es FALSA?</div>
+      <div class="quiz-options" id="qf2-opts">
+        <button class="quiz-opt" onclick="checkQuiz('f2',0,'b')">A) n² = O(n³)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f2',1,'b')">B) n³ = O(n²)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f2',2,'b')">C) 2ⁿ = O(3ⁿ)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f2',3,'b')">D) log n = O(n)</button>
+      </div>
+      <div class="quiz-feedback correct-fb" id="qf2-fb-correct">✅ n³ NO es O(n²). Para serlo, necesitaría existir c tal que n³ ≤ c·n², es decir n ≤ c para todo n grande. Imposible.</div>
+      <div class="quiz-feedback wrong-fb" id="qf2-fb-wrong">❌ Respuesta B. n³ = O(n²) es falso: n³/n² = n → ∞, no está acotado.</div>
+    </div>
+
+    <div class="quiz-container">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Pregunta 3 de 4 — Análisis</div>
+      <div class="quiz-q">¿Cuánto cuesta (Big-O) calcular la media acumulativa de n elementos usando la fórmula recursiva μₙ = ((n-1)μₙ₋₁ + xₙ) / n?</div>
+      <div class="quiz-options" id="qf3-opts">
+        <button class="quiz-opt" onclick="checkQuiz('f3',0,'a')">A) O(n) — recorremos los n elementos una vez</button>
+        <button class="quiz-opt" onclick="checkQuiz('f3',1,'a')">B) O(n²)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f3',2,'a')">C) O(log n)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f3',3,'a')">D) O(1)</button>
+      </div>
+      <div class="quiz-feedback correct-fb" id="qf3-fb-correct">✅ Cada actualización de la media es O(1) y hacemos n de ellas → O(n) total. Mucho mejor que recalcular la media desde cero en cada paso (O(n²)).</div>
+      <div class="quiz-feedback wrong-fb" id="qf3-fb-wrong">❌ Respuesta A — O(n). Cada paso hace trabajo constante O(1), y hay n pasos.</div>
+    </div>
+
+    <div class="quiz-container">
+      <div style="font-size:0.75rem;color:var(--muted);margin-bottom:8px">Pregunta 4 de 4 — Grafos</div>
+      <div class="quiz-q">En un grafo no dirigido con n vértices, ¿cuánto espacio ocupa la matriz de adyacencia?</div>
+      <div class="quiz-options" id="qf4-opts">
+        <button class="quiz-opt" onclick="checkQuiz('f4',0,'c')">A) O(n)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f4',1,'c')">B) O(n log n)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f4',2,'c')">C) O(n²)</button>
+        <button class="quiz-opt" onclick="checkQuiz('f4',3,'c')">D) O(E) donde E es el número de aristas</button>
+      </div>
+      <div class="quiz-feedback correct-fb" id="qf4-fb-correct">✅ La matriz es de tamaño n×n = n² celdas. Por eso para grafos con pocos aristas (dispersos) es mejor la lista de adyacencia O(V+E).</div>
+      <div class="quiz-feedback wrong-fb" id="qf4-fb-wrong">❌ Respuesta C — O(n²). La matriz tiene n filas × n columnas.</div>
+    </div>
+
+    <div id="final-score-display" style="display:none;text-align:center;padding:40px;background:var(--bg2);border:1px solid var(--border);border-radius:16px;margin-top:24px">
+      <div style="font-size:3rem;margin-bottom:16px" id="final-emoji">🎉</div>
+      <div style="font-family:'Fraunces',serif;font-size:2rem;color:#fff;margin-bottom:8px">¡Quiz Completado!</div>
+      <div style="font-size:1.1rem;color:var(--muted);margin-bottom:24px">Puntuación total:</div>
+      <div style="font-family:'JetBrains Mono',monospace;font-size:3rem;color:var(--blue)" id="final-score-num">0</div>
+      <div style="font-size:0.9rem;color:var(--muted);margin-top:8px">puntos acumulados</div>
+      <button class="btn primary" style="margin-top:24px" onclick="showSection(0)">🔄 Repasar desde el inicio</button>
+    </div>
+  </div>
+
+  <div class="section-nav">
+    <button class="btn" onclick="showSection(6)">← Anterior</button>
+    <div></div>
+  </div>
+</div>
+
+</main>
+
+<script>
+// ===== STATE =====
+let score = 0;
+let currentSection = 0;
+let answeredQuizzes = {};
+let complexChart = null;
+
+// ===== NAVIGATION =====
+function showSection(idx) {
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('sec-' + idx).classList.add('active');
+  document.getElementById('nav-' + idx).classList.add('active');
+  currentSection = idx;
+  updateProgress();
+  window.scrollTo(0,0);
+  if(idx === 3) setTimeout(initComplexChart, 300);
+  if(idx === 5) setTimeout(() => loadGraph('social'), 300);
+  if(idx === 4) setTimeout(initBinarySearch, 300);
+}
+
+function updateProgress() {
+  const pct = ((currentSection) / 7) * 100;
+  document.getElementById('progress-bar').style.width = pct + '%';
+}
+
+// ===== QUIZ =====
+function checkQuiz(qid, chosen, correct) {
+  const key = 'q'+qid;
+  if(answeredQuizzes[key]) return;
+  answeredQuizzes[key] = true;
+  const opts = document.querySelectorAll('#q'+qid+'-opts .quiz-opt');
+  opts.forEach(o => { o.classList.add('disabled'); });
+  const correctIdx = correct.charCodeAt(0) - 'a'.charCodeAt(0);
+  opts[correctIdx].classList.add('correct');
+  if(chosen !== correctIdx) { opts[chosen].classList.add('wrong'); }
+  const isCorrect = chosen === correctIdx;
+  if(isCorrect) {
+    score += 10;
+    document.getElementById('score-val').textContent = score;
+    document.getElementById('q'+qid+'-fb-correct').classList.add('show');
+    // mark nav done
+    const navDone = document.getElementById('nav-' + currentSection);
+    if(navDone) navDone.classList.add('done');
+  } else {
+    document.getElementById('q'+qid+'-fb-wrong').classList.add('show');
+  }
+
+  if(['f1','f2','f3','f4'].includes(String(qid))) {
+    const allDone = ['f1','f2','f3','f4'].every(k => answeredQuizzes['q'+k]);
+    if(allDone) {
+      document.getElementById('final-score-display').style.display = 'block';
+      document.getElementById('final-score-num').textContent = score;
+      document.getElementById('final-emoji').textContent = score >= 100 ? '🏆' : score >= 60 ? '🎉' : '💪';
+    }
+  }
+}
+
+// fix quiz id mapping for final - no-op, kept for clarity
+
+// ===== DOMINOS =====
+function initDominoes() {
+  const d = document.getElementById('dominoes');
+  if(!d) return;
+  d.innerHTML = '';
+  for(let i=0;i<18;i++){
+    const el = document.createElement('div');
+    el.className='domino';
+    el.id='dom-'+i;
+    d.appendChild(el);
+  }
+}
+function startDominoes() {
+  initDominoes();
+  let i = 0;
+  function fall() {
+    if(i >= 18) return;
+    const el = document.getElementById('dom-'+i);
+    if(el) { el.classList.add('active'); setTimeout(()=>el.classList.replace('active','fallen'), 300); }
+    i++;
+    setTimeout(fall, 150);
+  }
+  fall();
+}
+function resetDominoes() { initDominoes(); }
+
+// ===== SUMA VERIFY =====
+function updateSumaVerify(n) {
+  n = parseInt(n);
+  document.getElementById('suma-n').textContent = n;
+  const real = n*(n+1)/2;
+  const formula = n*(n+1)/2;
+  document.getElementById('suma-real').textContent = real;
+  document.getElementById('suma-formula').textContent = formula;
+  document.getElementById('suma-match').textContent = real===formula ? '✅' : '❌';
+  let exp = '';
+  for(let i=1;i<=Math.min(n,8);i++) exp += i + (i<n?(i<Math.min(n,8)?'+':'...'):'');
+  exp += ' = ' + real;
+  document.getElementById('suma-expansion').textContent = exp;
+}
+
+function showTab(section, tab) {
+  if(section==='ex1') {
+    document.getElementById('ex1-suma').style.display = tab==='suma'?'block':'none';
+    document.getElementById('ex1-verify').style.display = tab==='verify'?'block':'none';
+    document.querySelectorAll('#sec-1 .tab').forEach((t,i)=>{
+      t.classList.toggle('active', (i===0&&tab==='suma')||(i===1&&tab==='verify'));
+    });
+  }
+}
+
+// ===== FACTORIAL =====
+function showFactorial(n) {
+  let html = '';
+  let steps = [];
+  for(let i=n;i>=1;i--) steps.push(i);
+  steps.push(0);
+  // unrolling phase
+  for(let i=n;i>0;i--) {
+    html += `<span style="color:var(--blue)">${i}!</span> = ${i} × <span style="color:var(--muted)">${i-1}!</span><br>`;
+  }
+  html += `<span style="color:var(--green)">0! = 1</span> &nbsp;<em style="color:var(--muted)">[caso base]</em><br><br>`;
+  // resolving phase
+  let val = 1;
+  for(let i=1;i<=n;i++) {
+    val *= i;
+    html += `<span style="color:var(--orange)">${i}!</span> = ${val}<br>`;
+  }
+  document.getElementById('factorial-steps').innerHTML = html;
+}
+
+// ===== FIBONACCI =====
+function showFib(n) {
+  let memo = {};
+  function fib(k) {
+    if(k<=1) return k;
+    if(memo[k]) return memo[k];
+    memo[k] = fib(k-1)+fib(k-2);
+    return memo[k];
+  }
+  let html = '';
+  for(let i=0;i<=n;i++) html += `F(${i}) = <span style="color:var(--blue)">${fib(i)}</span><br>`;
+  html += `<br><span style="color:var(--green)">F(${n}) = ${fib(n)}</span>`;
+  document.getElementById('fib-steps').innerHTML = html;
+}
+
+// ===== COMPLEXITY CHART =====
+function initComplexChart() {
+  const canvas = document.getElementById('complexChart');
+  if(!canvas) return;
+  if(complexChart) { complexChart.destroy(); }
+  const n = parseInt(document.getElementById('complex-slider').value);
+  updateComplexChart(n);
+}
+
+function updateComplexChart(nMax) {
+  nMax = parseInt(nMax);
+  document.getElementById('complex-n').textContent = nMax;
+  const labels = [];
+  const data = { c1:[], logn:[], n:[], nlogn:[], n2:[], twoN:[] };
+  for(let i=1;i<=nMax;i++) {
+    labels.push(i);
+    data.c1.push(1);
+    data.logn.push(Math.log2(i));
+    data.n.push(i);
+    data.nlogn.push(i*Math.log2(i));
+    data.n2.push(i*i);
+    data.twoN.push(Math.min(Math.pow(2,i), nMax*nMax*2));
+  }
+  const canvas = document.getElementById('complexChart');
+  if(!canvas) return;
+  if(complexChart) complexChart.destroy();
+  complexChart = new Chart(canvas, {
+    type: 'line',
+    data: {
+      labels,
+      datasets: [
+        { label:'O(1)', data:data.c1, borderColor:'#64748b', borderWidth:2, pointRadius:0 },
+        { label:'O(log n)', data:data.logn, borderColor:'#38bdf8', borderWidth:2, pointRadius:0 },
+        { label:'O(n)', data:data.n, borderColor:'#4ade80', borderWidth:2, pointRadius:0 },
+        { label:'O(n log n)', data:data.nlogn, borderColor:'#fbbf24', borderWidth:2, pointRadius:0 },
+        { label:'O(n²)', data:data.n2, borderColor:'#fb923c', borderWidth:2, pointRadius:0 },
+        { label:'O(2ⁿ)', data:data.twoN, borderColor:'#f87171', borderWidth:2, pointRadius:0, borderDash:[4,4] },
+      ]
+    },
+    options: {
+      responsive:true, animation:false,
+      plugins:{ legend:{ labels:{ color:'#94a3b8', font:{size:11} } } },
+      scales: {
+        x:{ ticks:{color:'#64748b',maxTicksLimit:10}, grid:{color:'#1e2d45'} },
+        y:{ ticks:{color:'#64748b'}, grid:{color:'#1e2d45'}, max: nMax*nMax }
+      }
+    }
+  });
+  // hierarchy
+  const h = document.getElementById('hierarchy-visual');
+  if(h) {
+    const items = [
+      {txt:'O(1)',col:'#64748b'},{txt:'<',col:'#334155'},
+      {txt:'O(log n)',col:'#38bdf8'},{txt:'<',col:'#334155'},
+      {txt:'O(n)',col:'#4ade80'},{txt:'<',col:'#334155'},
+      {txt:'O(n log n)',col:'#fbbf24'},{txt:'<',col:'#334155'},
+      {txt:'O(n²)',col:'#fb923c'},{txt:'<',col:'#334155'},
+      {txt:'O(2ⁿ)',col:'#f87171'},{txt:'<',col:'#334155'},
+      {txt:'O(n!)',col:'#f472b6'}
+    ];
+    h.innerHTML = items.map(it=>`<span style="color:${it.col};padding:2px 6px">${it.txt}</span>`).join('');
+  }
+}
+
+// ===== NOTATION DETAIL =====
+const notationDetails = {
+  bigO: { color:'var(--blue)', title:'Big-O — O(g)', content: `<strong style="color:var(--blue)">Cota Superior Asintótica</strong><br><br>f(n) = O(g(n)) significa que f NO crece más rápido que g.<br><br>Definición: existen c > 0 y n₀ tal que <span class="highlight-math">f(n) ≤ c·g(n)</span> para todo n ≥ n₀<br><br>Ejemplo del PDF: <span class="highlight-math">f(n) = 3n+7 = O(n)</span> porque para n≥7: 3n+7 ≤ 4n` },
+  bigOmega: { color:'var(--green)', title:'Big-Omega — Ω(g)', content: `<strong style="color:var(--green)">Cota Inferior Asintótica</strong><br><br>f(n) = Ω(g(n)) significa que f NO crece más lento que g.<br><br>Definición: existen c > 0 y n₀ tal que <span class="highlight-math">c·g(n) ≤ f(n)</span> para todo n ≥ n₀<br><br>Ejemplo: <span class="highlight-math">f(n) = n²+10n = Ω(n²)</span> porque n²+10n ≥ n²` },
+  bigTheta: { color:'var(--yellow)', title:'Big-Theta — Θ(g)', content: `<strong style="color:var(--yellow)">Cota Ajustada</strong><br><br>f(n) = Θ(g(n)) significa que f y g crecen al mismo ritmo.<br><br>Equivale a: f = O(g) Y f = Ω(g)<br>Existen c₁,c₂ tal que <span class="highlight-math">c₁·g(n) ≤ f(n) ≤ c₂·g(n)</span><br><br>Ejemplo: <span class="highlight-math">f(n) = 3n+7 = Θ(n)</span> porque 3n ≤ 3n+7 ≤ 4n para n≥7` },
+  smallo: { color:'var(--orange)', title:'small-o — o(g)', content: `<strong style="color:var(--orange)">Cota Superior Estricta</strong><br><br>f(n) = o(g(n)) significa que f crece <em>estrictamente</em> más lento.<br><br>Definición por límite: <span class="highlight-math">lím[n→∞] f(n)/g(n) = 0</span><br><br>Ejemplo: <span class="highlight-math">n = o(n²)</span> porque lím(n/n²) = lím(1/n) = 0<br><br>Diferencia con O: o es más fuerte — no permite crecer al mismo ritmo` },
+  smallomega: { color:'var(--purple)', title:'small-ω — ω(g)', content: `<strong style="color:var(--purple)">Cota Inferior Estricta</strong><br><br>f(n) = ω(g(n)) significa que f crece <em>estrictamente</em> más rápido.<br><br>Definición por límite: <span class="highlight-math">lím[n→∞] f(n)/g(n) = ∞</span><br><br>Ejemplo: <span class="highlight-math">n² = ω(n)</span> porque lím(n²/n) = lím(n) = ∞` }
+};
+function showNotation(key) {
+  const d = notationDetails[key];
+  const panel = document.getElementById('notation-detail');
+  const content = document.getElementById('notation-detail-content');
+  panel.style.borderColor = d.color;
+  content.innerHTML = `<div class="def-label" style="color:${d.color}">${d.title}</div><div class="def-text" style="line-height:1.9">${d.content}</div>`;
+  panel.style.display = 'block';
+  panel.scrollIntoView({behavior:'smooth',block:'nearest'});
+}
+
+// ===== PSEUDOCODE ANIMATOR =====
+const pseudoData = {
+  p1: {
+    lines: [0,1,2,3,4,5,6,7],
+    explanations: [
+      'n ← len(dataset) → O(1): asignar el tamaño del dataset. Costo: constante.',
+      'm ← n_features → O(1): asignar el número de variables. Costo: constante.',
+      'for i = 1 to m → Este bucle corre m veces. Cada iteración contiene el bucle j...',
+      'for j = i+1 to m → Bucle interno. En total i y j juntos dan ≈ m²/2 pares → O(m²)',
+      'corr ← 0 → O(1): inicialización. Se ejecuta O(m²) veces en total.',
+      'for k = 1 to n → Bucle más interno. Corre n veces por cada par (i,j). ¡Aquí está el costo!',
+      'corr ← corr + ... → O(1) por iteración. Pero se ejecuta O(m²·n) veces en total.',
+      'correlation[i,j] ← corr/n → O(1): guardar resultado. O(m²) veces total.'
+    ],
+    final: true
+  }
+};
+let pseudoState = {};
+function pseudoReset(id) {
+  const state = pseudoState[id] = { step: -1, playing: false };
+  const data = pseudoData[id];
+  data.lines.forEach(l => {
+    const el = document.getElementById(id+'-l'+l);
+    if(el) {
+      el.classList.remove('highlight');
+      el.querySelectorAll('.line-cost').forEach(c => c.textContent = '');
+    }
+  });
+  document.getElementById(id+'-status').textContent = 'Listo';
+  document.getElementById(id+'-explanation').style.display = 'none';
+  const res = document.getElementById(id+'-result');
+  if(res) res.style.display='none';
+}
+function pseudoStep(id) {
+  if(!pseudoState[id]) pseudoState[id] = { step: -1 };
+  const state = pseudoState[id];
+  const data = pseudoData[id];
+  // un-highlight prev
+  if(state.step >= 0) {
+    const prev = document.getElementById(id+'-l'+data.lines[state.step]);
+    if(prev) prev.classList.remove('highlight');
+  }
+  state.step++;
+  if(state.step >= data.lines.length) {
+    document.getElementById(id+'-status').textContent = '✅ Análisis completo';
+    if(data.final) { const r=document.getElementById(id+'-result'); if(r) r.style.display='block'; }
+    state.step = -1;
+    return;
+  }
+  const lineIdx = data.lines[state.step];
+  const el = document.getElementById(id+'-l'+lineIdx);
+  if(el) {
+    el.classList.add('highlight');
+    const costs = ['O(1)','O(1)','m veces','≈m²/2 veces','O(1)×m²','n veces × m²','O(m²·n)','O(1)×m²'];
+    const costEl = el.querySelector('.line-cost');
+    if(costEl) costEl.textContent = '← ' + costs[state.step];
+  }
+  document.getElementById(id+'-status').textContent = `Línea ${state.step+1}/${data.lines.length}`;
+  const exp = document.getElementById(id+'-explanation');
+  exp.style.display='block';
+  document.getElementById(id+'-exp-text').textContent = data.explanations[state.step];
+}
+function pseudoPlay(id) {
+  if(!pseudoState[id]) pseudoState[id] = {step:-1};
+  pseudoState[id].step = -1;
+  let s = 0;
+  const data = pseudoData[id];
+  function next() {
+    if(s > data.lines.length) return;
+    pseudoStep(id);
+    s++;
+    if(s <= data.lines.length) setTimeout(next, 900);
+  }
+  next();
+}
+
+// ===== BINARY SEARCH =====
+const bsData = [3,9,10,27,38,43,82];
+let bsSteps = [];
+let bsStepIdx = 0;
+function initBinarySearch() {
+  const wrap = document.getElementById('bs-array');
+  if(!wrap) return;
+  wrap.innerHTML = bsData.map((v,i)=>`<div class="array-cell" id="bs-cell-${i}">${v}</div>`).join('');
+}
+function resetBinarySearch() { initBinarySearch(); document.getElementById('bs-log').innerHTML=''; bsStepIdx=0; }
+function startBinarySearch() {
+  initBinarySearch();
+  const log = document.getElementById('bs-log');
+  log.innerHTML = '';
+  const target = 43;
+  let lo=0, hi=bsData.length-1, step=1;
+  const steps = [];
+  while(lo<=hi){
+    const mid=Math.floor((lo+hi)/2);
+    steps.push({lo,hi,mid,val:bsData[mid]});
+    if(bsData[mid]===target){steps[steps.length-1].found=true;break;}
+    else if(bsData[mid]<target) lo=mid+1;
+    else hi=mid-1;
+  }
+  let i=0;
+  function animate(){
+    if(i>=steps.length) return;
+    const s=steps[i];
+    initBinarySearch();
+    for(let j=0;j<bsData.length;j++){
+      const cell=document.getElementById('bs-cell-'+j);
+      if(j===s.mid) cell.classList.add('active');
+      else if(j<s.lo||j>s.hi) cell.style.opacity='0.3';
+    }
+    let msg=`Paso ${i+1}: mid=${s.mid}, A[mid]=${s.val} `;
+    if(s.found) msg+=`= 43 → ✅ ¡Encontrado en índice ${s.mid}!`;
+    else if(s.val<target) msg+=`< 43 → buscar en mitad derecha [lo=${s.mid+1}]`;
+    else msg+=`> 43 → buscar en mitad izquierda [hi=${s.mid-1}]`;
+    log.innerHTML += `<span style="color:${s.found?'var(--green)':'var(--text)'}">${msg}</span><br>`;
+    i++;
+    if(i<steps.length) setTimeout(animate, 1200);
+  }
+  animate();
+}
+
+// ===== MERGE SORT =====
+function initMergeSort() {
+  const wrap=document.getElementById('ms-array');
+  if(!wrap) return;
+  const arr=[38,27,43,3];
+  wrap.innerHTML=arr.map(v=>`<div class="array-cell">${v}</div>`).join('');
+  document.getElementById('ms-tree').innerHTML='';
+  document.getElementById('ms-log').innerHTML='';
+}
+function resetMergeSort(){ initMergeSort(); }
+function startMergeSort(){
+  initMergeSort();
+  const log=document.getElementById('ms-log');
+  const tree=document.getElementById('ms-tree');
+  const messages=[
+    '🔀 Dividir [38,27,43,3] → [38,27] y [43,3]',
+    '🔀 Dividir [38,27] → [38] y [27]',
+    '🔀 Dividir [43,3] → [43] y [3]',
+    '✅ [38] y [27] son unitarios (caso base)',
+    '✅ [43] y [3] son unitarios (caso base)',
+    '🔗 Fusionar [38]+[27] → [27,38]',
+    '🔗 Fusionar [43]+[3] → [3,43]',
+    '🔗 Fusionar [27,38]+[3,43] → [3,27,38,43] ✅'
+  ];
+  const treeHTML = `<div style="text-align:center;font-family:'JetBrains Mono',monospace;font-size:0.75rem;line-height:2.2;color:var(--text)">
+    <div style="color:var(--orange)">[38, 27, 43, 3]</div>
+    <div style="color:var(--muted)">↙&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;↘</div>
+    <div style="display:inline-flex;gap:80px">
+      <span style="color:var(--blue)">[38, 27]</span>
+      <span style="color:var(--blue)">[43, 3]</span>
+    </div><br>
+    <div style="display:inline-flex;gap:20px">
+      <span style="color:var(--green)">[38]</span>
+      <span style="color:var(--green)">[27]</span>
+      <span style="color:var(--muted)">&nbsp;&nbsp;&nbsp;&nbsp;</span>
+      <span style="color:var(--green)">[43]</span>
+      <span style="color:var(--green)">[3]</span>
+    </div><br>
+    <div style="color:var(--muted);font-size:0.7rem">↑ Fase de fusión ↑</div>
+    <div style="display:inline-flex;gap:60px">
+      <span style="color:var(--purple)">[27,38]</span>
+      <span style="color:var(--purple)">[3,43]</span>
+    </div><br>
+    <div style="color:var(--yellow)">[3, 27, 38, 43] ← resultado final</div>
+  </div>`;
+  tree.innerHTML = treeHTML;
+  let i=0;
+  function next(){
+    if(i>=messages.length) {
+      const wrap=document.getElementById('ms-array');
+      wrap.innerHTML=[3,27,38,43].map(v=>`<div class="array-cell sorted">${v}</div>`).join('');
+      return;
+    }
+    log.innerHTML += messages[i]+'<br>';
+    i++;
+    setTimeout(next,700);
+  }
+  next();
+}
+
+// ===== GRAPHS =====
+const graphs = {
+  social: {
+    nodes:['Alice','Bob','Carlos','Diana'],
+    edges:[[0,1],[0,2],[1,3],[2,3]],
+    directed:false
+  },
+  directed:{
+    nodes:['A','B','C','D'],
+    edges:[[0,1],[1,2],[0,3],[3,2]],
+    directed:true
+  },
+  streaming:{
+    nodes:['A','B','C','X','Y','Z'],
+    edges:[[0,3],[0,4],[1,4],[1,5],[2,3]],
+    directed:false,
+    bipartite:true
+  }
+};
+function loadGraph(key){
+  const g=graphs[key];
+  const canvas=document.getElementById('graphCanvas');
+  if(!canvas) return;
+  const ctx=canvas.getContext('2d');
+  const W=canvas.width, H=canvas.height;
+  ctx.clearRect(0,0,W,H);
+  const n=g.nodes.length;
+  const pos=[];
+  if(g.bipartite){
+    const left=g.nodes.length<=4?3:3, right=3;
+    for(let i=0;i<3;i++) pos.push({x:70,y:40+i*70});
+    for(let i=0;i<3;i++) pos.push({x:230,y:40+i*70});
+  } else {
+    for(let i=0;i<n;i++){
+      const angle=(2*Math.PI*i/n)-Math.PI/2;
+      pos.push({x:W/2+85*Math.cos(angle),y:H/2+75*Math.sin(angle)});
+    }
+  }
+  // edges
+  ctx.strokeStyle='#334155';ctx.lineWidth=2;
+  g.edges.forEach(([a,b])=>{
+    ctx.beginPath();ctx.moveTo(pos[a].x,pos[a].y);ctx.lineTo(pos[b].x,pos[b].y);ctx.stroke();
+    if(g.directed){
+      const dx=pos[b].x-pos[a].x,dy=pos[b].y-pos[a].y;
+      const len=Math.sqrt(dx*dx+dy*dy);
+      const ux=dx/len,uy=dy/len;
+      const ex=pos[b].x-ux*16,ey=pos[b].y-uy*16;
+      ctx.beginPath();ctx.moveTo(ex,ey);
+      ctx.lineTo(ex-8*ux+5*uy,ey-8*uy-5*ux);
+      ctx.lineTo(ex-8*ux-5*uy,ey-8*uy+5*ux);
+      ctx.fillStyle='#334155';ctx.fill();
+    }
+  });
+  // nodes
+  pos.forEach((p,i)=>{
+    ctx.beginPath();ctx.arc(p.x,p.y,16,0,Math.PI*2);
+    ctx.fillStyle=g.bipartite?(i<3?'rgba(56,189,248,0.2)':'rgba(74,222,128,0.2)'):'rgba(56,189,248,0.15)';
+    ctx.fill();
+    ctx.strokeStyle=g.bipartite?(i<3?'#38bdf8':'#4ade80'):'#38bdf8';
+    ctx.lineWidth=2;ctx.stroke();
+    ctx.fillStyle='#e2e8f0';ctx.font='bold 11px DM Sans';ctx.textAlign='center';ctx.textBaseline='middle';
+    ctx.fillText(g.nodes[i],p.x,p.y);
+  });
+  // matrix
+  const N=n;
+  let mat=Array(N).fill(null).map(()=>Array(N).fill(0));
+  g.edges.forEach(([a,b])=>{mat[a][b]=1;if(!g.directed)mat[b][a]=1;});
+  let mhtml='&nbsp;&nbsp;';
+  g.nodes.forEach(nd=>mhtml+=`<span style="color:var(--blue);margin:0 4px">${nd.substring(0,1)}</span>`);
+  mhtml+='<br>';
+  mat.forEach((row,i)=>{
+    mhtml+=`<span style="color:var(--blue)">${g.nodes[i].substring(0,1)}</span>&nbsp;`;
+    row.forEach(v=>mhtml+=`<span style="color:${v?'var(--green)':'var(--muted)'}">${v}&nbsp;</span>`);
+    mhtml+='<br>';
+  });
+  document.getElementById('adj-matrix').innerHTML=mhtml;
+  // list
+  let lhtml='';
+  g.nodes.forEach((nd,i)=>{
+    const neighbors=g.edges.filter(([a,b])=>a===i||(b===i&&!g.directed)).map(([a,b])=>a===i?g.nodes[b]:g.nodes[a]);
+    lhtml+=`<span style="color:var(--blue)">${nd}</span> → [${neighbors.join(', ')||'∅'}]<br>`;
+  });
+  document.getElementById('adj-list').innerHTML=lhtml;
+}
+
+// ===== INIT =====
+document.addEventListener('DOMContentLoaded', function() {
+  initBinarySearch();
+  initMergeSort();
+  initDominoes();
+  updateSumaVerify(5);
+});
+</script>
+</body>
+</html>
