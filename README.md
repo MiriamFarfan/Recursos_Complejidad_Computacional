@@ -94,4 +94,4 @@ python3 -m http.server 8080
 
 ---
 
-<p align="center">Hecho con 🧠 para el curso de Complejidad Computacional</p>
+<p align="center">Hecho como material de repaso de la Unidad 1 para el curso de Complejidad Computacional</p>
